@@ -13,10 +13,14 @@ import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class PlayerListener {
@@ -79,6 +83,9 @@ public class PlayerListener {
 		System.out.println("Name: " + textureInfo.getName());
 		System.out.println("UUID: " + textureInfo.getId());
 
+		String value = null;
+		String signature = null;
+
 		TextComponentString hoverText = new TextComponentString("");
 		for (Map.Entry<String, Property> entry : textureInfo.getProperties().entries()) {
 			System.out.println(entry.getKey() + ": {");
@@ -89,14 +96,29 @@ public class PlayerListener {
 
 			hoverText.appendText(entry.getKey() + ": {\n"
 					+ TextFormatting.GRAY + "  name:  " + TextFormatting.WHITE + entry.getValue().getName() + "\n"
-					+ TextFormatting.GRAY + "  value: " + TextFormatting.WHITE + Util.stripMiddle(entry.getValue().getValue(),40) + "\n"
-					+ TextFormatting.GRAY + "  sig:   " + TextFormatting.WHITE + Util.stripMiddle(entry.getValue().getSignature(),40) + "\n"
+					+ TextFormatting.GRAY + "  value: " + TextFormatting.WHITE + Util.stripMiddle(entry.getValue().getValue(), 40) + "\n"
+					+ TextFormatting.GRAY + "  sig:   " + TextFormatting.WHITE + Util.stripMiddle(entry.getValue().getSignature(), 40) + "\n"
 					+ "}");
+
+			value = entry.getValue().getValue();
+			signature = entry.getValue().getSignature();
 		}
 
-		TextComponentString textComponent = new TextComponentString("[" + location.name() + "] " + TextFormatting.UNDERLINE+ textureInfo.getName()+TextFormatting.RESET + " (" + textureInfo.getId() + ")");
+		try {
+			if (value != null) {
+				value = URLEncoder.encode(value, StandardCharsets.UTF_8.toString()).replaceAll("/","%2F");
+			}
+			if (signature != null) {
+				signature = URLEncoder.encode(signature, StandardCharsets.UTF_8.toString()).replaceAll("/","%2F");
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		TextComponentString textComponent = new TextComponentString("[" + location.name() + "] " + TextFormatting.UNDERLINE + textureInfo.getName() + TextFormatting.RESET + " (" + textureInfo.getId() + ")");
 		Style style = textComponent.getStyle();
 		style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
+		style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://api.mineskin.org/get/forTexture/" + value + (signature != null ? signature : "")));
 		mc.ingameGUI.addChatMessage(ChatType.SYSTEM, textComponent);
 	}
 
