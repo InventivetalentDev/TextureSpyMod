@@ -15,6 +15,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
+import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -47,35 +48,35 @@ public class PlayerListener {
 			TileEntity tileEntity = mc.world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntitySkull) {
 				GameProfile textureInfo = Util.getTextureInfo((TileEntitySkull) tileEntity);
-				showTextureInfo(mc, TextureLocation.BLOCK, textureInfo, null, (TileEntitySkull) tileEntity);
+				showTextureInfo(mc, TextureLocation.BLOCK, textureInfo,  (TileEntitySkull) tileEntity);
 			}
 		} else if (rayTraceResult.typeOfHit == RayTraceResult.Type.ENTITY) {
 			if (rayTraceResult.entityHit instanceof EntityPlayer) {
 				GameProfile textureInfo = Util.getTextureInfo((EntityPlayer) rayTraceResult.entityHit);
-				showTextureInfo(mc, TextureLocation.SKIN, textureInfo, (EntityPlayer) rayTraceResult.entityHit, null);
+				showTextureInfo(mc, TextureLocation.SKIN, textureInfo, (EntityPlayer) rayTraceResult.entityHit);
 			}
 			if (rayTraceResult.entityHit instanceof EntityLivingBase) {
 				GameProfile textureInfo = Util.getTextureInfo((EntityLivingBase) rayTraceResult.entityHit);
-				showTextureInfo(mc, TextureLocation.HEAD, textureInfo, (EntityLivingBase) rayTraceResult.entityHit, null);
+				showTextureInfo(mc, TextureLocation.HEAD, textureInfo, (EntityLivingBase) rayTraceResult.entityHit);
 			}
 		}
 
 	}
 
-	public void showTextureInfo(Minecraft mc, TextureLocation location, GameProfile textureInfo, EntityLivingBase entity, TileEntitySkull tileEntity) {
+	@SubscribeEvent
+	public void on(RenderTooltipEvent.PostText event) {
+		GameProfile textureInfo = Util.getTextureInfo(event.getStack());
+		showTextureInfo(Minecraft.getMinecraft(),TextureLocation.ITEM,textureInfo, event.getStack());
+	}
+
+	public void showTextureInfo(Minecraft mc, TextureLocation location, GameProfile textureInfo, Object target) {
 		if (textureInfo == null) { return; }
 
-		if (entity != null) {
-			if (entity == lastTargetThing) {
+		if (target != null) {
+			if (target == lastTargetThing) {
 				return;
 			}
-			lastTargetThing = entity;
-		}
-		if (tileEntity != null) {
-			if (tileEntity == lastTargetThing) {
-				return;
-			}
-			lastTargetThing = tileEntity;
+			lastTargetThing = target;
 		}
 
 		System.out.println(" ");
