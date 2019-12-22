@@ -118,7 +118,7 @@ public class PlayerListener {
 		TextComponentString textComponent = new TextComponentString("[" + location.name() + "] " + TextFormatting.UNDERLINE + textureInfo.getName() + TextFormatting.RESET + " (" + textureInfo.getId() + ")");
 		Style style = textComponent.getStyle();
 		style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
-		style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://api.mineskin.org/get/forTexture/" + value + (signature != null ? signature : "")));
+		style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://api.mineskin.org/get/forTexture/" + value + (signature != null ? "/"+signature : "")));
 		mc.ingameGUI.addChatMessage(ChatType.SYSTEM, textComponent);
 	}
 
