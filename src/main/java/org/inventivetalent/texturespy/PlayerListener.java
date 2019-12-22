@@ -29,6 +29,8 @@ public class PlayerListener {
 	private TextureSpyMod mod;
 
 	Object lastTargetThing;
+	GameProfile lastProfile;
+	long lastInfoTime = 0;
 
 	public PlayerListener(TextureSpyMod mod) {
 		this.mod = mod;
@@ -78,6 +80,12 @@ public class PlayerListener {
 			}
 			lastTargetThing = target;
 		}
+		if (System.currentTimeMillis() - lastInfoTime < 1000) {
+			return;
+		}
+
+		lastProfile = textureInfo;
+		lastInfoTime = System.currentTimeMillis();
 
 		System.out.println(" ");
 		System.out.println(location);
