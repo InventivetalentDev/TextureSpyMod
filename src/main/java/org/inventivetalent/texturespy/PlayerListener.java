@@ -80,6 +80,9 @@ public class PlayerListener {
 			}
 			lastTargetThing = target;
 		}
+		if (lastProfile == textureInfo) {
+			return;
+		}
 		if (System.currentTimeMillis() - lastInfoTime < 1000) {
 			return;
 		}
